@@ -6,15 +6,21 @@
 using namespace std;
 
 Color green = {173, 204, 96, 255};
-Color darkGreen = {43, 51, 24, 255};
+Color dark_green = {43, 51, 24, 255};
 
-int cellSize = 30;
-int cellCount = 25;
+int cell_size = 30;
+int cell_count = 25;
 
-/*
-    I still have to program a piece of code that checks how much time has passed
-    since the last snake update, that's why the snake runs like crazy
-*/
+double last_updated_time = 0;
+
+bool EventTriggered(double interval){
+    double current_time = GetTime();
+    if(current_time - last_updated_time >= interval){
+        last_updated_time = current_time;
+        return true;
+    }
+    return false;
+}
 
 class Snake{
 public:
@@ -27,13 +33,13 @@ public:
             float y = body[i].y; 
 
             Rectangle segment = Rectangle{                                 // Creates a rectangle that fills up an entire cell
-                (x * cellSize),
-                (y * cellSize),
-                static_cast<float>(cellSize),
-                static_cast<float>(cellSize)
+                (x * cell_size),
+                (y * cell_size),
+                static_cast<float>(cell_size),
+                static_cast<float>(cell_size)
             };
 
-            DrawRectangleRounded(segment, 0.5f, 6, darkGreen);             // Draw the rounded rectangle
+            DrawRectangleRounded(segment, 0.5f, 6, dark_green);             // Draw the rounded rectangle
         }
     }
 
@@ -61,19 +67,19 @@ public:
     }
 
     void Draw(){
-        DrawTexture(texture, pos.x * cellSize, pos.y * cellSize, WHITE);
+        DrawTexture(texture, pos.x * cell_size, pos.y * cell_size, WHITE);
     }
 
     Vector2 GenerateRandomPos(){
-        float x = GetRandomValue(0, cellCount - 1);
-        float y = GetRandomValue(0, cellCount - 1);
+        float x = GetRandomValue(0, cell_count - 1);
+        float y = GetRandomValue(0, cell_count - 1);
 
         return Vector2{x, y};
     }
 };
 
 int main(){
-    InitWindow(cellSize*cellCount, cellSize*cellCount, "Snake");
+    InitWindow(cell_size*cell_count, cell_size*cell_count, "Snake");
     SetTargetFPS(60);
 
     Food food = Food();
@@ -83,7 +89,25 @@ int main(){
     while(WindowShouldClose() == false){
         BeginDrawing();
 
-        snake.Update();
+        if(EventTriggered(0.25)){
+            snake.Update();
+        }
+
+        if(IsKeyPressed(KEY_UP) && snake.direction.y != 1){
+            snake.direction = {0, -1};
+        }
+
+        if(IsKeyPressed(KEY_DOWN) && snake.direction.y != -1){
+            snake.direction = {0, 1};
+        }
+
+        if(IsKeyPressed(KEY_LEFT) && snake.direction.x != 1){
+            snake.direction = {-1, 0};
+        }
+
+        if(IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1){
+            snake.direction = {1, 0};
+        }
 
         ClearBackground(green);
 
