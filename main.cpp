@@ -1,7 +1,7 @@
 #include "raylib.h"
-#include <deque> // A good library to control lists better.
+#include <deque>                                                            // A good library to control lists better.
 #include <iostream>
-#include "raymath.h" // Math library meant to support raylib structs.
+#include "raymath.h"                                                        // Math library meant to support raylib structs.
 
 using namespace std;
 
@@ -57,7 +57,7 @@ public:
     }
 
     ~Food(){
-        UnloadTexture(texture);                                           // This is a distructor... it's called when the object is destroyed or loses its reference
+        UnloadTexture(texture);                                            // This is a distructor... it's called when the object is destroyed or loses its reference
     }
 
     void Draw(){
