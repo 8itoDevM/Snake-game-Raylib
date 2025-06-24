@@ -13,8 +13,8 @@ int cell_count = 25;
 
 double last_updated_time = 0;
 
-bool EventTriggered(double interval){
-    double current_time = GetTime();
+bool EventTriggered(double interval){                                      // This method returns if the interval since the last update has passed
+    double current_time = GetTime();                                       // GetTime retrieves how much time has passed since the GameInit                
     if(current_time - last_updated_time >= interval){
         last_updated_time = current_time;
         return true;
@@ -78,41 +78,59 @@ public:
     }
 };
 
+class Game{
+public:
+    Snake snake = Snake();
+    Food food = Food();
+
+    void Draw(){
+        snake.Draw();
+        food.Draw();
+    }
+
+    void Update(){
+        snake.Update();
+        CheckCollisionWithFood();
+    }
+
+    void CheckCollisionWithFood(){
+        if(Vector2Equals(snake.body[0], food.pos)){
+            food.pos = food.GenerateRandomPos();
+        }
+    }
+
+};
+
 int main(){
     InitWindow(cell_size*cell_count, cell_size*cell_count, "Snake");
     SetTargetFPS(60);
 
-    Food food = Food();
-    Snake snake = Snake();
+    Game game = Game();
 
     // GameLoop
     while(WindowShouldClose() == false){
         BeginDrawing();
 
         if(EventTriggered(0.25)){
-            snake.Update();
+            game.Update();
         }
 
-        if(IsKeyPressed(KEY_UP) && snake.direction.y != 1){
-            snake.direction = {0, -1};
+        if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1){
+        game.snake.direction = {0, -1};
         }
-
-        if(IsKeyPressed(KEY_DOWN) && snake.direction.y != -1){
-            snake.direction = {0, 1};
+        if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1){
+            game.snake.direction = {0, 1};
         }
-
-        if(IsKeyPressed(KEY_LEFT) && snake.direction.x != 1){
-            snake.direction = {-1, 0};
+        if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1){
+            game.snake.direction = {-1, 0};
         }
-
-        if(IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1){
-            snake.direction = {1, 0};
+        if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1){
+            game.snake.direction = {1, 0};
         }
 
         ClearBackground(green);
 
-        food.Draw();
-        snake.Draw();
+        game.Draw();
 
         EndDrawing();
     }
