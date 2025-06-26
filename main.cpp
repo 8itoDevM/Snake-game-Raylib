@@ -14,13 +14,12 @@ int cell_count = 25;
 double last_updated_time = 0;
 
 bool ElementInDeque(Vector2 element, deque<Vector2> deque){
-    for(int i = 0; i < deque.size(); i++){
+    for(unsigned int i = 0; i < deque.size(); i++){
         if(Vector2Equals(deque[i], element)){
             return true;
-        } else{
-            return false;
         }
     }
+    return false;
 }
 
 bool EventTriggered(double interval){                                      // This method returns if the interval since the last update has passed
@@ -36,6 +35,8 @@ class Snake{
 public:
     deque<Vector2> body = {Vector2{6, 9}, Vector2{7,9}, Vector2{8, 9}};    // Body of the snake, made out of a Vector2 list.
     Vector2 direction = {1, 0};                                            // Defines the direction the snake is going
+
+    bool add_segment = false;
 
     void Draw(){
         for(unsigned int i = 0; i < body.size(); i++){                     // For loop that defines the grid system for the snake
@@ -54,8 +55,14 @@ public:
     }
 
     void Update(){
-        body.pop_back();                                                   // Removes the last cell from the back of the snake
         body.push_front(Vector2Add(body[0], direction));                   // Adds one cell on front of the snake and applies directions
+
+        if(add_segment){
+            add_segment = false;
+        } else{
+            body.pop_back();                                                   // Removes the last cell from the back of the snake
+        }
+
     }
 };
 
@@ -80,16 +87,22 @@ public:
         DrawTexture(texture, pos.x * cell_size, pos.y * cell_size, WHITE);
     }
 
-    Vector2 GenerateRandomPos(deque<Vector2> snake_body){
+    Vector2 GenerateRandomCell(){
         float x = GetRandomValue(0, cell_count - 1);
         float y = GetRandomValue(0, cell_count - 1);
-        Vector2 position = {x,y};
 
-        while(ElementInDeque(position, snake_body)){
-            GenerateRandomPos(snake_body);
+        return Vector2{x,y};
+    }
+
+    Vector2 GenerateRandomPos(deque<Vector2> snake_body){
+        Vector2 cell = GenerateRandomCell();
+
+        while(ElementInDeque(cell, snake_body)){
+            cout << "Spawned in snake" << endl;
+            cell = GenerateRandomCell();
         };
 
-        return position;
+        return cell;
     }
 };
 
@@ -111,6 +124,7 @@ public:
     void CheckCollisionWithFood(){
         if(Vector2Equals(snake.body[0], food.pos)){
             food.pos = food.GenerateRandomPos(snake.body);
+            snake.add_segment = true;
         }
     }
 
@@ -126,7 +140,7 @@ int main(){
     while(WindowShouldClose() == false){
         BeginDrawing();
 
-        if(EventTriggered(0.25)){
+        if(EventTriggered(0.1)){
             game.Update();
         }
 
