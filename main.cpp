@@ -66,8 +66,8 @@ public:
     }
 
     void Reset(){
-        body = {Vector2{6, 9}, Vector2{7,9}, Vector2{8, 9}};
-        direction = {1, 0};
+        body = {Vector2{6, 9}, Vector2{5,9}, Vector2{4, 9}};
+        direction = {-1, 0};
     }
 };
 
@@ -198,6 +198,7 @@ int main(){
         ClearBackground(green);
 
         DrawRectangleLinesEx(Rectangle{(float)offset - 5, (float)offset - 5, (float)cell_size * cell_count + 10, (float)cell_size * cell_count + 10}, 5, dark_green);
+        DrawText("C++ Snake", 70, 20, 40, dark_green);
 
         game.Draw();
 
