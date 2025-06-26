@@ -13,6 +13,16 @@ int cell_count = 25;
 
 double last_updated_time = 0;
 
+bool ElementInDeque(Vector2 element, deque<Vector2> deque){
+    for(int i = 0; i < deque.size(); i++){
+        if(Vector2Equals(deque[i], element)){
+            return true;
+        } else{
+            return false;
+        }
+    }
+}
+
 bool EventTriggered(double interval){                                      // This method returns if the interval since the last update has passed
     double current_time = GetTime();                                       // GetTime retrieves how much time has passed since the GameInit                
     if(current_time - last_updated_time >= interval){
@@ -54,12 +64,12 @@ public:
     Vector2 pos;
     Texture2D texture;
 
-    Food(){
+    Food(deque<Vector2> snake_body){
         Image image = LoadImage("Graphics/food.png");
         texture = LoadTextureFromImage(image);                             // Loads an Image set as a Texture and unloads the Image to manage memory
         UnloadImage(image);
 
-        pos = GenerateRandomPos();          
+        pos = GenerateRandomPos(snake_body);          
     }
 
     ~Food(){
@@ -70,18 +80,23 @@ public:
         DrawTexture(texture, pos.x * cell_size, pos.y * cell_size, WHITE);
     }
 
-    Vector2 GenerateRandomPos(){
+    Vector2 GenerateRandomPos(deque<Vector2> snake_body){
         float x = GetRandomValue(0, cell_count - 1);
         float y = GetRandomValue(0, cell_count - 1);
+        Vector2 position = {x,y};
 
-        return Vector2{x, y};
+        while(ElementInDeque(position, snake_body)){
+            GenerateRandomPos(snake_body);
+        };
+
+        return position;
     }
 };
 
 class Game{
 public:
     Snake snake = Snake();
-    Food food = Food();
+    Food food = Food(snake.body);
 
     void Draw(){
         snake.Draw();
@@ -95,7 +110,7 @@ public:
 
     void CheckCollisionWithFood(){
         if(Vector2Equals(snake.body[0], food.pos)){
-            food.pos = food.GenerateRandomPos();
+            food.pos = food.GenerateRandomPos(snake.body);
         }
     }
 
