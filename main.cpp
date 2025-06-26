@@ -10,6 +10,7 @@ Color dark_green = {43, 51, 24, 255};
 
 int cell_size = 30;
 int cell_count = 25;
+int offset = 75;
 
 double last_updated_time = 0;
 
@@ -33,7 +34,7 @@ bool EventTriggered(double interval){                                      // Th
 
 class Snake{
 public:
-    deque<Vector2> body = {Vector2{6, 9}, Vector2{7,9}, Vector2{8, 9}};    // Body of the snake, made out of a Vector2 list.
+    deque<Vector2> body = {Vector2{6, 9}, Vector2{5,9}, Vector2{4, 9}};    // Body of the snake, made out of a Vector2 list.
     Vector2 direction = {1, 0};                                            // Defines the direction the snake is going
 
     bool add_segment = false;
@@ -44,8 +45,8 @@ public:
             float y = body[i].y; 
 
             Rectangle segment = Rectangle{                                 // Creates a rectangle that fills up an entire cell
-                (x * cell_size),
-                (y * cell_size),
+                (offset + x * cell_size),
+                (offset + y * cell_size),
                 static_cast<float>(cell_size),
                 static_cast<float>(cell_size)
             };
@@ -88,7 +89,7 @@ public:
     }
 
     void Draw(){
-        DrawTexture(texture, pos.x * cell_size, pos.y * cell_size, WHITE);
+        DrawTexture(texture, offset + pos.x * cell_size, offset + pos.y * cell_size, WHITE);
     }
 
     Vector2 GenerateRandomCell(){
@@ -164,7 +165,7 @@ public:
 };
 
 int main(){
-    InitWindow(cell_size*cell_count, cell_size*cell_count, "Snake");
+    InitWindow(2 * offset + cell_size * cell_count, 2 * offset + cell_size * cell_count, "Snake");
     SetTargetFPS(60);
 
     Game game = Game();
@@ -195,6 +196,8 @@ int main(){
         }
 
         ClearBackground(green);
+
+        DrawRectangleLinesEx(Rectangle{(float)offset - 5, (float)offset - 5, (float)cell_size * cell_count + 10, (float)cell_size * cell_count + 10}, 5, dark_green);
 
         game.Draw();
 
