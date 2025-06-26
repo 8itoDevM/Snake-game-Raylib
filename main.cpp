@@ -98,7 +98,6 @@ public:
         Vector2 cell = GenerateRandomCell();
 
         while(ElementInDeque(cell, snake_body)){
-            cout << "Spawned in snake" << endl;
             cell = GenerateRandomCell();
         };
 
